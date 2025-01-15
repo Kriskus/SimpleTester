@@ -48,5 +48,5 @@ signals:
     void sendSequenceToSocket(const QByteArray&);
 
     void dataSended();
-    void dataReceived(const QByteArray&);
+    void sendDataReceived(const QByteArray&);
 };

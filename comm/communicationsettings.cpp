@@ -25,7 +25,7 @@ void CommunicationSettings::configurateSignals()
     connect(m_serial.data(), &SerialPort::sendInformation, this, &CommunicationSettings::showStatus);
 
     connect(m_serial.data(), &SerialPort::dataSended, this, &CommunicationSettings::dataSended);
-    connect(m_serial.data(), &SerialPort::dataReceived, this, &CommunicationSettings::dataReceived);
+    connect(m_serial.data(), &SerialPort::sendDataReceived, this, &CommunicationSettings::sendDataReceived);
 
     connect(this, &CommunicationSettings::sendSequenceToCom, m_serial.data(), &SerialPort::deviceWrite);
 
