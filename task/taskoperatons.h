@@ -7,6 +7,8 @@
 #include <QApplication>
 #include <QThread>
 
+#include <QDebug>
+
 #include "../fileOperation/sequencestructure.h"
 
 class TaskOperatons : public QObject
@@ -30,12 +32,10 @@ public slots:
     void resumeTask();
     void endTask();
 
-    // void getResponse(const QByteArray& responseReceived);
-    // void checkResponse(const QByteArray& responseReceived);
-
 signals:
     void finished();
     void sendSequence(const QString&);
     void sendTestCaseName(const QString&);
     void sendResult(const QString&);
+    void sendResponseAwaited(const QString&);
 };
