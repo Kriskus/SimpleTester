@@ -25,18 +25,19 @@ private:
 
     QMap<QString, Sequence> m_sequences{};
 
+    QString m_responseAwaited{};
+
 private slots:
     void readDataFile();
     void configureSettings();
 
     void startThread();
 
-    void getResponse(const QByteArray &responseReceived);
-    void checkResponse(const QByteArray &responseReceived);
-
+    void getResponseFromDevice(const QByteArray& responseReceived);
+    void getAwaitedResponse(const QString& responseReceived);
+    void checkResponses(const QByteArray& responseReceived);
 
 signals:
     void sendData(const QString&);
-
     void resumeTask();
 };

@@ -7,11 +7,14 @@
 
 #include "task/taskoperatons.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_cfgWindow(new CommunicationSettings(this))
 {
+    qRegisterMetaType<QTextCursor>("QTextCursor");
     configureSettings();
 }
 
@@ -39,6 +42,8 @@ void MainWindow::configureSettings()
     connect(ui->pushButtonStart, &QPushButton::clicked, this, &MainWindow::startThread);
     connect(ui->pushButtonClose, &QPushButton::clicked, this, &MainWindow::close);
 
+    connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::resumeTask);
+
     ui->pushButtonStart->hide();
     ui->pushButtonStop->hide();
     ui->label->hide();
@@ -55,13 +60,12 @@ void MainWindow::startThread()
     task->moveToThread(threadTask);
 
     connect(threadTask, &QThread::started, task, &TaskOperatons::startTask);
-    connect(m_cfgWindow.data(), &CommunicationSettings::dataReceived, task, &TaskOperatons::resumeTask, Qt::DirectConnection);
-    //connect(m_cfgWindow.data(), &CommunicationSettings::dataReceived, task, &TaskOperatons::getResponse, Qt::DirectConnection);
 
-    connect(task, &TaskOperatons::sendSequence, m_cfgWindow.data(), &CommunicationSettings::getSequenceToSend, Qt::DirectConnection);
-    connect(task, &TaskOperatons::sendResult, ui->textBrowserInformation, &QTextBrowser::append, Qt::DirectConnection);
-    connect(task, &TaskOperatons::sendTestCaseName, ui->textBrowserInformation, &QTextBrowser::append, Qt::DirectConnection);
+    connect(task, &TaskOperatons::sendSequence, m_cfgWindow.data(), &CommunicationSettings::getSequenceToSend);
+    connect(m_cfgWindow.data(), &CommunicationSettings::sendDataReceived, this, &MainWindow::getResponseFromDevice);
+    connect(task, &TaskOperatons::sendResponseAwaited, this, &MainWindow::getAwaitedResponse, Qt::DirectConnection);
 
+    connect(this, &MainWindow::resumeTask, task, &TaskOperatons::resumeTask, Qt::DirectConnection);
 
     connect(task, &TaskOperatons::finished, threadTask, &QThread::quit);
     connect(threadTask, &QThread::finished, threadTask, &QThread::deleteLater);
@@ -70,18 +74,27 @@ void MainWindow::startThread()
     threadTask->start();
 }
 
-void MainWindow::getResponse(const QByteArray &responseReceived)
+void MainWindow::getResponseFromDevice(const QByteArray &responseReceived)
 {
-    qApp->processEvents();
-    checkResponse(responseReceived);
-    resumeTask();
+    checkResponses(responseReceived);
 }
 
-void MainWindow::checkResponse(const QByteArray &responseReceived)
+void MainWindow::getAwaitedResponse(const QString &responseReceived)
 {
-    // if(responseReceived.toHex() == QByteArray::fromHex(m_responseAwaited)) {
-    //     emit sendResult("\t\tPoprawnie");
-    // } else {
-    //     emit sendResult("\t\tWystêpuj¹ ró¿nice: " + responseReceived.toHex() + " | " + QByteArray::fromHex(m_responseAwaited));
-    // }
+    m_responseAwaited = responseReceived;
 }
+
+void MainWindow::checkResponses(const QByteArray &responseReceived)
+{
+    QByteArray responseAwaited = m_responseAwaited.replace(" ", "").toUpper().toLatin1();
+
+    if(responseAwaited == responseReceived.toHex().toUpper()) {
+        ui->textBrowserInformation->append("<span style='color: green; font: bold;'>Poprawnie</span>");
+    } else {
+        ui->textBrowserInformation->append("<span style='color: red; font: bold;'>Niepoprawnie</span>");
+        ui->textBrowserInformation->append("<span style='color: red; font: italic;'>Oczekiwana: " + responseAwaited + "</span>");
+        ui->textBrowserInformation->append("<span style='color: red; font: italic;'>Otrzymana:  " + responseReceived.toHex().toUpper() + "</span>");
+    }
+    emit resumeTask();
+}
+
