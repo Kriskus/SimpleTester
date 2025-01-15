@@ -36,7 +36,7 @@ void SerialPort::deviceRead()
 {
     m_response.push_back(m_serial->readAll());
     if(m_response.contains("\03")) {
-        emit dataReceived(m_response);
+        emit sendDataReceived(m_response);
         m_response.clear();
     }
 }

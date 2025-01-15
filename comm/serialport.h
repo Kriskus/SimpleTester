@@ -4,6 +4,8 @@
 #include <QSerialPort>
 #include <QScopedPointer>
 
+#include <QDebug>
+
 class SerialPort : public QObject
 {
     Q_OBJECT
@@ -30,6 +32,6 @@ private:
 
 signals:
     void dataSended();
-    void dataReceived(const QByteArray&);
+    void sendDataReceived(const QByteArray&);
     void sendInformation(bool, const QString&);
 };
