@@ -9,7 +9,6 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    comm/communicationsettings.cpp \
     comm/serialport.cpp \
     fileOperation/jsonreader.cpp \
     main.cpp \
@@ -17,7 +16,6 @@ SOURCES += \
     task/taskoperatons.cpp
 
 HEADERS += \
-    comm/communicationsettings.h \
     comm/serialport.h \
     fileOperation/jsonreader.h \
     fileOperation/sequencestructure.h \
@@ -25,7 +23,6 @@ HEADERS += \
     task/taskoperatons.h
 
 FORMS += \
-    comm/communicationsettings.ui \
     mainwindow.ui
 
 # Default rules for deployment.
