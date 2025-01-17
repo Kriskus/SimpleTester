@@ -26,6 +26,8 @@ private:
     QWaitCondition m_pauseCond;
     bool m_pause{false};
 
+    QString tab{"\t"};
+
 public slots:
     void startTask();
     void pauseTask();
@@ -35,6 +37,7 @@ public slots:
 signals:
     void finished();
     void sendSequence(const QString&);
+    void sendSequenceName(const QString&);
     void sendTestCaseName(const QString&);
     void sendResult(const QString&);
     void sendResponseAwaited(const QString&);

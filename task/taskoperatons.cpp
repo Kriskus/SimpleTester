@@ -3,20 +3,18 @@
 TaskOperatons::TaskOperatons(QObject *parent, QMap<QString, Sequence> sequences)
     : QObject{parent}
     , m_sequences(sequences)
-{
-    //connect(this, &TaskOperatons::sendSequence, this, &TaskOperatons::pauseTask);
-}
+{}
 
 void TaskOperatons::startTask()
 {
     for (const auto &sequenceKey : m_sequences.keys()) {
         const auto &sequence = m_sequences[sequenceKey];
 
-        qDebug() << "Testowana sekwencja: " + sequenceKey;
+        emit sendSequenceName("<span style='color: blue; font: bold;'>Testowana sekwencja: " + sequenceKey.toUpper() + "</span>");
 
         for (const auto &testCase : sequence.steps.keys()) {
             const auto &step = sequence.steps[testCase];
-            qDebug() << "\tPrzypadek testowy: " + testCase;
+            emit sendTestCaseName("&nbsp;&nbsp;&nbsp;&nbsp;<span style='color: black; font: bold;'>Przypadek testowy: " + testCase + "</span>");
             emit sendResponseAwaited(step.response);
             emit sendSequence(step.sequence);
             m_pause = true;
@@ -29,7 +27,6 @@ void TaskOperatons::startTask()
         }
     }
     emit finished();
-    qDebug() << "W¹tek zakoñczony";
 }
 
 void TaskOperatons::pauseTask()
